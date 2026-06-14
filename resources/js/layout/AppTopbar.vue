@@ -25,7 +25,7 @@ const user = computed(() => page.props.auth.user);
                         fill="var(--primary-color)"
                     />
                 </svg>
-                <span>SAKAI</span>
+                <span>Smile Dental Care</span>
             </Link>
         </div>
 
