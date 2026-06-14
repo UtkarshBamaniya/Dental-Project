@@ -5,16 +5,13 @@ import { Link } from '@inertiajs/vue3';
 
 <template>
     <div
-        class="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0"
+        class="flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0"
+        style="background-image: url('/Uploads/smile-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"
     >
-        <div>
-            <Link href="/">
-                <ApplicationLogo class="h-20 w-20 fill-current text-gray-500" />
-            </Link>
-        </div>
-
+        <!-- Added glassmorphism effect to match the background -->
         <div
-            class="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg"
+            class="mt-6 w-full overflow-hidden px-8 py-10 shadow-2xl sm:max-w-md sm:rounded-2xl border border-white/50"
+            style="background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);"
         >
             <slot />
         </div>
