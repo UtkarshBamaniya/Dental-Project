@@ -14,6 +14,8 @@ import Chart from 'primevue/chart';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Tag from 'primevue/tag';
+import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -36,6 +38,8 @@ createInertiaApp({
                 },
             })
             .use(ZiggyVue)
+            .use(ToastService)
+            .directive('tooltip', Tooltip)
             .component('Button', Button)
             .component('Chart', Chart)
             .component('Column', Column)

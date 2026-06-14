@@ -35,6 +35,21 @@ const model = ref([
             },
         ],
     },
+    {
+        label: 'Appointment',
+        items: [
+            {
+                label: 'Patient Appointment Master',
+                icon: 'pi pi-fw pi-book',
+                href: '/dental-patient-appointments',
+            },
+            {
+                label: 'Clinic Appointment',
+                icon: 'pi pi-fw pi-book',
+                href: '/appointment/clinic',
+            },
+        ],
+    },
 ]);
 </script>
 
