@@ -8,7 +8,6 @@ import DeleteDialog from '@/Pages/Common/AugComponent/DeleteDialog.vue';
 import Toolbar from '@/Pages/Common/AugComponent/Toolbar.vue';
 import FollowUpForm from './FollowUpForm.vue';
 import Form from './Form.vue';
-import Show from './Show.vue';
 import { appointmentStatusOptions } from './formOptions';
 
 const props = defineProps({
@@ -32,46 +31,15 @@ const props = defineProps({
 
 const flash = usePage().props.flash;
 const formRef = ref(null);
-const showRef = ref(null);
 const followUpRef = ref(null);
 const deleteDialogRef = ref(null);
 const tableRef = ref(null);
 
 const allColumns = [
-    {
-        key: 'sequence',
-        field: 'sequence',
-        header: 'No',
-        sortable: false,
-        visible: true,
-    },
-    {
-        key: 'patient_code',
-        field: 'patient_code',
-        header: 'Patient Code',
-        filterType: 'text',
-        filterNm: 'search',
-        sortable: true,
-        visible: true,
-    },
-    {
-        key: 'patient_name',
-        field: 'patient_name',
-        header: 'Patient Name',
-        filterType: 'text',
-        filterNm: 'patient_name',
-        sortable: true,
-        visible: true,
-    },
-    {
-        key: 'mobile_no',
-        field: 'mobile_no',
-        header: 'Mobile No',
-        filterType: 'text',
-        filterNm: 'mobile_no',
-        sortable: true,
-        visible: true,
-    },
+    { key: 'sequence', field: 'sequence', header: 'No', sortable: false, visible: true },
+    { key: 'patient_code', field: 'patient_code', header: 'Patient Code', filterType: 'text', filterNm: 'patient_code', sortable: true, visible: true },
+    { key: 'patient_name', field: 'patient_name', header: 'Patient Name', filterType: 'text', filterNm: 'patient_name', sortable: true, visible: true },
+    { key: 'mobile_no', field: 'mobile_no', header: 'Mobile No', filterType: 'text', filterNm: 'mobile_no', sortable: true, visible: true },
     {
         key: 'gender',
         field: 'gender',
@@ -86,34 +54,15 @@ const allColumns = [
         sortable: true,
         visible: true,
     },
+    { key: 'age', field: 'age', header: 'Age', sortable: true, visible: true },
+    { key: 'latest_appointment_date', field: 'latest_appointment_date', header: 'Latest Appointment Date', filterType: 'date', filterNm: 'appointment_date', sortable: true, visible: true },
     {
-        key: 'age',
-        field: 'age',
-        header: 'Age',
-        filterType: 'number',
-        filterNm: 'age',
-        sortable: true,
-        visible: true,
-    },
-    {
-        key: 'appointment_date',
-        field: 'latest_appointment_date',
-        header: 'Appointment Date',
-        filterType: 'text',
-        filterNm: 'appointment_date',
-        sortable: true,
-        visible: true,
-    },
-    {
-        key: 'appointment_status',
+        key: 'latest_appointment_status',
         field: 'latest_appointment_status',
         header: 'Appointment Status',
         filterType: 'select',
         filterNm: 'appointment_status',
-        filterOptions: appointmentStatusOptions.map((value) => ({
-            label: value,
-            value,
-        })),
+        filterOptions: appointmentStatusOptions.map((value) => ({ label: value, value })),
         sortable: false,
         visible: true,
     },
@@ -123,45 +72,60 @@ const menuItems = [
     {
         label: 'Show',
         icon: 'pi pi-eye',
-        action: (data) => showRef.value?.openShow(data.id),
+        url: (data) => data?.id ? route('dental-patient-appointments.show', data.id) : null,
     },
     {
-        label: 'Edit',
+        label: 'Edit Patient',
         icon: 'pi pi-pencil',
-        action: (data) => formRef.value?.openEdit(data.id),
+        action: (data) => {
+            if (!data?.id) {
+                return;
+            }
+
+            formRef.value?.openEdit(data.id);
+        },
     },
     {
         label: 'Add Follow-up',
         icon: 'pi pi-calendar-plus',
-        action: (data) => followUpRef.value?.openNew(data),
+        action: (data) => {
+            if (!data?.id) {
+                return;
+            }
+
+            followUpRef.value?.openNew(data);
+        },
     },
     {
         label: 'Delete',
         icon: 'pi pi-trash',
-        action: (data) => deleteDialogRef.value?.openDelete(data.id, 'dental-patient-appointments.destroy'),
+        action: (data) => {
+            if (!data?.id) {
+                return;
+            }
+
+            deleteDialogRef.value?.openDelete(data.id, 'dental-patient-appointments.destroy');
+        },
     },
 ];
 </script>
 
 <template>
-    <!-- <Head title="Patient Appointment " /> -->
+    <Head :title="title" />
+
     <AuthenticatedLayout>
-        <div class="card !border-0 !border-slate-100 shadow-sm mb-4">
+        <div class="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <Toolbar :title="title" :desc="desc" :icon="icon">
                 <template #actions>
-                    <AddNewButton
-                        :can-create="props.permissions.canCreate"
-                        tooltip="Add"
-                        @click="formRef?.openNew()"
-                    />
+                    <AddNewButton :can-create="props.permissions.canCreate" tooltip="Add" @click="formRef?.openNew()" />
                 </template>
             </Toolbar>
         </div>
 
-        <div class="card !border-0 !border-slate-100 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div
                 v-if="flash.success"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 mb-4"
+                class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
             >
                 {{ flash.success }}
             </div>
@@ -176,13 +140,8 @@ const menuItems = [
             />
         </div>
 
-        <DeleteDialog
-            ref="deleteDialogRef"
-            module-name="patient appointment"
-            @fetch-data="tableRef?.fetchData()"
-        />
+        <DeleteDialog ref="deleteDialogRef" module-name="patient" @fetch-data="tableRef?.fetchData()" />
         <Form ref="formRef" @fetch-data="tableRef?.fetchData()" />
         <FollowUpForm ref="followUpRef" @fetch-data="tableRef?.fetchData()" />
-        <Show ref="showRef" />
     </AuthenticatedLayout>
 </template>

@@ -17,7 +17,6 @@ const toTimeObject = (value) => {
 
     const [hours = '0', minutes = '0', seconds = '0'] = String(value).split(':');
     const time = new Date();
-
     time.setHours(Number(hours), Number(minutes), Number(seconds), 0);
 
     return time;
@@ -44,7 +43,7 @@ export const paymentModeOptions = ['Cash', 'UPI', 'Card', 'Bank Transfer'];
 export const paymentStatusOptions = ['Pending', 'Partial', 'Paid'];
 export const visitTypeOptions = ['First Visit', 'Follow-up'];
 
-export const createPatientAppointmentForm = (patient = null) => ({
+export const createPatientForm = (patient = null) => ({
     id: patient?.id ?? null,
     patient_code: patient?.patient_code ?? '',
     first_name: patient?.first_name ?? '',
@@ -63,67 +62,60 @@ export const createPatientAppointmentForm = (patient = null) => ({
     occupation: patient?.occupation ?? '',
     referred_by: patient?.referred_by ?? '',
     status: patient?.status ?? 'Active',
-
-    medical_history: {
-        blood_group: patient?.medical_history?.blood_group ?? null,
-        diabetes: patient?.medical_history?.diabetes ?? false,
-        blood_pressure: patient?.medical_history?.blood_pressure ?? false,
-        heart_disease: patient?.medical_history?.heart_disease ?? false,
-        allergy: patient?.medical_history?.allergy ?? false,
-        allergy_details: patient?.medical_history?.allergy_details ?? '',
-        current_medicine: patient?.medical_history?.current_medicine ?? '',
-        previous_dental_treatment: patient?.medical_history?.previous_dental_treatment ?? '',
-        pregnancy_status: patient?.medical_history?.pregnancy_status ?? false,
-        other_medical_notes: patient?.medical_history?.other_medical_notes ?? '',
-    },
-
-    appointment: {
-        id: patient?.appointment?.id ?? null,
-        appointment_date: toDateObject(patient?.appointment?.appointment_date),
-        appointment_time: toTimeObject(patient?.appointment?.appointment_time),
-        doctor_id: patient?.appointment?.doctor_id ?? null,
-        visit_type: patient?.appointment?.visit_type ?? 'First Visit',
-        appointment_type: patient?.appointment?.appointment_type ?? null,
-        chief_complaint: patient?.appointment?.chief_complaint ?? '',
-        problem_area: patient?.appointment?.problem_area ?? null,
-        tooth_no: patient?.appointment?.tooth_no ?? '',
-        priority: patient?.appointment?.priority ?? 'Normal',
-        status: patient?.appointment?.status ?? 'Scheduled',
-        notes: patient?.appointment?.notes ?? '',
-    },
-
-    billing: {
-        consultation_fee: patient?.billing?.consultation_fee ?? 0,
-        treatment_estimate: patient?.billing?.treatment_estimate ?? 0,
-        discount: patient?.billing?.discount ?? 0,
-        paid_amount: patient?.billing?.paid_amount ?? 0,
-        payment_mode: patient?.billing?.payment_mode ?? null,
-        payment_status: patient?.billing?.payment_status ?? 'Pending',
-        remarks: patient?.billing?.remarks ?? '',
-    },
 });
 
-export const createFollowUpForm = () => ({
-    appointment: {
-        appointment_date: null,
-        appointment_time: null,
-        doctor_id: null,
+export const createMedicalHistoryForm = (medicalHistory = null) => ({
+    blood_group: medicalHistory?.blood_group ?? null,
+    diabetes: medicalHistory?.diabetes ?? false,
+    blood_pressure: medicalHistory?.blood_pressure ?? false,
+    heart_disease: medicalHistory?.heart_disease ?? false,
+    allergy: medicalHistory?.allergy ?? false,
+    allergy_details: medicalHistory?.allergy_details ?? '',
+    current_medicine: medicalHistory?.current_medicine ?? '',
+    previous_dental_treatment: medicalHistory?.previous_dental_treatment ?? '',
+    pregnancy_status: medicalHistory?.pregnancy_status ?? false,
+    other_medical_notes: medicalHistory?.other_medical_notes ?? '',
+});
+
+export const createAppointmentForm = (appointment = null, defaults = {}) => ({
+    id: appointment?.id ?? null,
+    appointment_no: appointment?.appointment_no ?? null,
+    appointment_date: toDateObject(appointment?.appointment_date ?? defaults.appointment_date ?? null),
+    appointment_time: toTimeObject(appointment?.appointment_time ?? defaults.appointment_time ?? null),
+    doctor_id: appointment?.doctor_id ?? defaults.doctor_id ?? null,
+    visit_type: appointment?.visit_type ?? defaults.visit_type ?? 'First Visit',
+    appointment_type: appointment?.appointment_type ?? defaults.appointment_type ?? null,
+    chief_complaint: appointment?.chief_complaint ?? '',
+    problem_area: appointment?.problem_area ?? defaults.problem_area ?? null,
+    tooth_no: appointment?.tooth_no ?? '',
+    priority: appointment?.priority ?? defaults.priority ?? 'Normal',
+    status: appointment?.status ?? defaults.status ?? 'Scheduled',
+    notes: appointment?.notes ?? '',
+});
+
+export const createBillingForm = (billing = null) => ({
+    consultation_fee: billing?.consultation_fee ?? 0,
+    treatment_estimate: billing?.treatment_estimate ?? 0,
+    discount: billing?.discount ?? 0,
+    paid_amount: billing?.paid_amount ?? 0,
+    payment_mode: billing?.payment_mode ?? null,
+    payment_status: billing?.payment_status ?? 'Pending',
+    remarks: billing?.remarks ?? '',
+});
+
+export const createPatientAppointmentForm = (payload = null) => ({
+    ...createPatientForm(payload),
+    medical_history: createMedicalHistoryForm(payload?.medical_history),
+    appointment: createAppointmentForm(payload?.appointment),
+    billing: createBillingForm(payload?.billing),
+});
+
+export const createFollowUpForm = (appointment = null) => ({
+    appointment: createAppointmentForm(appointment, {
         visit_type: 'Follow-up',
         appointment_type: 'Follow-up',
-        chief_complaint: '',
-        problem_area: null,
-        tooth_no: '',
         priority: 'Normal',
         status: 'Scheduled',
-        notes: '',
-    },
-    billing: {
-        consultation_fee: 0,
-        treatment_estimate: 0,
-        discount: 0,
-        paid_amount: 0,
-        payment_mode: null,
-        payment_status: 'Pending',
-        remarks: '',
-    },
+    }),
+    billing: createBillingForm(appointment?.billing),
 });
