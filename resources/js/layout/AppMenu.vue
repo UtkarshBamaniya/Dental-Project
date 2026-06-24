@@ -19,23 +19,6 @@ const model = ref([
         ],
     },
     {
-        label: 'Resources',
-        items: [
-            {
-                label: 'PrimeVue Docs',
-                icon: 'pi pi-fw pi-book',
-                url: 'https://primevue.org',
-                target: '_blank',
-            },
-            {
-                label: 'Sakai Source',
-                icon: 'pi pi-fw pi-github',
-                url: 'https://github.com/primefaces/sakai-vue',
-                target: '_blank',
-            },
-        ],
-    },
-    {
         label: 'Appointment',
         items: [
             {

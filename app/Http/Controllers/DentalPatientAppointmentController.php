@@ -3,107 +3,160 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DentalClinic\DentalPatientAppointmentRequest;
+use App\Models\DentalAppointment;
 use App\Models\DentalPatient;
 use App\Repositories\DentalPatientAppointmentRepository;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DentalPatientAppointmentController extends Controller
 {
-    protected $basePath;
-    protected $urlSegment;
-    protected $repository;
-    
+    protected string $basePath;
+
+    protected DentalPatientAppointmentRepository $repository;
+
     public function __construct()
     {
-        // parent::__construct();
-        // $this->middleware('auth');
-        // $this->middleware('role_or_permission:size_group.create', ['only' => ['create', 'store']]);
-        // $this->middleware('role_or_permission:size_group.view', ['only' => ['index', 'show']]);
-        // $this->middleware('role_or_permission:size_group.update', ['only' => ['edit', 'update']]);
-        // $this->middleware('role_or_permission:size_group.delete', ['only' => ['destroy']]);
         $this->basePath = 'DentalClinic/PatientAppointmentMaster/';
-        $this->urlSegment = request()->segment(1);
         $this->repository = new DentalPatientAppointmentRepository();
     }
 
-    public function index()
+    public function index(): Response|\Illuminate\Http\JsonResponse
     {
-        $input = request()->all();
-        $data = $this->repository->index($input);
+        $data = $this->repository->index(request()->all());
 
         if (json_request()) {
             return response()->json($data);
         }
-        
-        return Inertia::render(
-            $this->basePath . 'Index',
-            [
-                'data' => $data,
-                'permissions' => $this->repository->permission(),
-                'title' => 'Patient Appointment Master',
-                'desc' => 'Manage Patient Appointment - Add New / Edit / Delete Patient Appointment.',
-                'icon' => 'pi pi-calendar-plus',
-            ]
-        );
+
+        return Inertia::render($this->basePath.'Index', [
+            'data' => $data,
+            'permissions' => $this->repository->permission(),
+            'title' => 'Patient Appointment Master',
+            'desc' => 'Manage patients, appointments, follow-ups, billing, and medical history.',
+            'icon' => 'pi pi-calendar-plus',
+        ]);
     }
 
-    public function store(DentalPatientAppointmentRequest $request)
+    public function create(): RedirectResponse
     {
-        $input = $request->all();
-        $this->repository->create($input);
-
-        return redirect()
-            ->route('dental-patient-appointments.index')
-            ->with('success', 'Patient appointment created successfully.');
-    }
-
-    public function show($id)
-    {
-        if (json_request()) {
-            return response()->json($this->repository->getShowData($id));
-        }
-
         return redirect()->route('dental-patient-appointments.index');
     }
 
-    public function edit($id)
+    public function store(DentalPatientAppointmentRequest $request): RedirectResponse
     {
-        $patient = DentalPatient::find($id);
+        $patient = $this->repository->create($request->validated());
+
+        return redirect()
+            ->route('dental-patient-appointments.show', $patient->id)
+            ->with('success', 'Patient and first appointment created successfully.');
+    }
+
+    public function show($id): Response|\Illuminate\Http\JsonResponse
+    {
+        $patient = DentalPatient::query()->findOrFail($id);
+        $data = $this->repository->getShowPageData($patient);
+
         if (json_request()) {
-            return response()->json($this->repository->getEditData($patient));
+            return response()->json($data);
         }
+
+        return Inertia::render($this->basePath.'Show', $data);
     }
 
-    public function update(DentalPatientAppointmentRequest $request)
+    public function edit($id): \Illuminate\Http\JsonResponse|RedirectResponse
     {
-        $input = $request->all();
-        $this->repository->update($input);
+        $patient = DentalPatient::query()->findOrFail($id);
 
-        // return redirect()
-        //     ->route('dental-patient-appointments.index')
-        //     ->with('success', 'Patient appointment updated successfully.');
+        if (json_request()) {
+            return response()->json($this->repository->getEditPatientData($patient));
+        }
+
+        return redirect()->route('dental-patient-appointments.show', $patient->id);
     }
 
-    public function destroy($id)
+    public function update(DentalPatientAppointmentRequest $request, $id): RedirectResponse
     {
+        if ($request->query('entity') === 'appointment') {
+            $appointment = DentalAppointment::query()->findOrFail($id);
+            $this->repository->updateAppointment($appointment, $request->validated());
+
+            return redirect()
+                ->route('dental-patient-appointments.show', $appointment->patient_id)
+                ->with('success', 'Appointment updated successfully.');
+        }
+
+        if ($request->query('entity') === 'medical-history') {
+            $patient = DentalPatient::query()->findOrFail($id);
+            $this->repository->updateMedicalHistory($patient, $request->validated());
+
+            return redirect()
+                ->route('dental-patient-appointments.show', $patient->id)
+                ->with('success', 'Medical history updated successfully.');
+        }
+
+        $patient = DentalPatient::query()->findOrFail($id);
+        $this->repository->updatePatient($patient, $request->validated());
+
+        return redirect()
+            ->back()
+            ->with('success', 'Patient details updated successfully.');
+    }
+
+    public function destroy($id): RedirectResponse
+    {
+        if (request()->query('entity') === 'appointment') {
+            $appointment = DentalAppointment::query()->findOrFail($id);
+            $patientId = $appointment->patient_id;
+            $this->repository->destroyAppointment($appointment);
+
+            return redirect()
+                ->route('dental-patient-appointments.show', $patientId)
+                ->with('success', 'Appointment deleted successfully.');
+        }
+
         $this->repository->delete($id);
 
-        // return redirect()
-        //     ->route('dental-patient-appointments.index')
-        //     ->with('success', 'Patient appointment deleted successfully.');
+        return redirect()
+            ->route('dental-patient-appointments.index')
+            ->with('success', 'Patient deleted successfully.');
     }
 
     public function storeFollowUp(DentalPatientAppointmentRequest $request, DentalPatient $patient): RedirectResponse
     {
-        $this->repository->storeFollowUp(
-            $patient,
-            $request->all()
-        );
+        $this->repository->storeFollowUp($patient, $request->validated());
 
         return redirect()
-            ->route('dental-patient-appointments.index')
+            ->route('dental-patient-appointments.show', $patient->id)
             ->with('success', 'Follow-up appointment created successfully.');
+    }
+
+    public function updateAppointment(DentalPatientAppointmentRequest $request, DentalAppointment $appointment): RedirectResponse
+    {
+        $this->repository->updateAppointment($appointment, $request->validated());
+
+        return redirect()
+            ->route('dental-patient-appointments.show', $appointment->patient_id)
+            ->with('success', 'Appointment updated successfully.');
+    }
+
+    public function destroyAppointment(DentalAppointment $appointment): RedirectResponse
+    {
+        $patientId = $appointment->patient_id;
+        $this->repository->destroyAppointment($appointment);
+
+        return redirect()
+            ->route('dental-patient-appointments.show', $patientId)
+            ->with('success', 'Appointment deleted successfully.');
+    }
+
+    public function updateMedicalHistory(DentalPatientAppointmentRequest $request, DentalPatient $patient): RedirectResponse
+    {
+        $this->repository->updateMedicalHistory($patient, $request->validated());
+
+        return redirect()
+            ->route('dental-patient-appointments.show', $patient->id)
+            ->with('success', 'Medical history updated successfully.');
     }
 }
