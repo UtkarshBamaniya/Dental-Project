@@ -66,14 +66,10 @@ export const createPatientForm = (patient = null) => ({
 
 export const createMedicalHistoryForm = (medicalHistory = null) => ({
     blood_group: medicalHistory?.blood_group ?? null,
-    diabetes: medicalHistory?.diabetes ?? false,
-    blood_pressure: medicalHistory?.blood_pressure ?? false,
-    heart_disease: medicalHistory?.heart_disease ?? false,
-    allergy: medicalHistory?.allergy ?? false,
+    medical_id: medicalHistory?.medical_id ?? [],
     allergy_details: medicalHistory?.allergy_details ?? '',
     current_medicine: medicalHistory?.current_medicine ?? '',
     previous_dental_treatment: medicalHistory?.previous_dental_treatment ?? '',
-    pregnancy_status: medicalHistory?.pregnancy_status ?? false,
     other_medical_notes: medicalHistory?.other_medical_notes ?? '',
 });
 

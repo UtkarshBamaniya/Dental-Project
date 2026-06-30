@@ -15,14 +15,10 @@ return new class extends Migration
             $table->id();
             $table->integer('patient_id');
             $table->string('blood_group')->nullable();
-            $table->boolean('diabetes')->default(false);
-            $table->boolean('blood_pressure')->default(false);
-            $table->boolean('heart_disease')->default(false);
-            $table->boolean('allergy')->default(false);
+            $table->json('medical_id')->nullable();
             $table->text('allergy_details')->nullable();
             $table->text('current_medicine')->nullable();
             $table->text('previous_dental_treatment')->nullable();
-            $table->boolean('pregnancy_status')->default(false);
             $table->text('other_medical_notes')->nullable();
             $table->timestamps();
         });

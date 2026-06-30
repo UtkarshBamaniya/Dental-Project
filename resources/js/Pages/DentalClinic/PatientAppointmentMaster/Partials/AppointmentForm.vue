@@ -2,7 +2,6 @@
 import { computed, watch } from 'vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import Checkbox from 'primevue/checkbox';
 import DatePicker from 'primevue/datepicker';
 import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
@@ -21,6 +20,7 @@ import {
     visitTypeOptions,
 } from '../formOptions';
 import { Link } from '@inertiajs/vue3';
+import MedicalDetails from '@/Pages/Common/DropDown/Medical.vue';
 
 const props = defineProps({
     form: {
@@ -82,15 +82,6 @@ const calculateAge = (date) => {
 watch(
     () => props.form.date_of_birth,
     (value) => calculateAge(value),
-);
-
-watch(
-    () => props.form.medical_history.allergy,
-    (value) => {
-        if (!value) {
-            props.form.medical_history.allergy_details = '';
-        }
-    },
 );
 
 const submit = () => emit('submit');
@@ -264,28 +255,8 @@ const submit = () => emit('submit');
                         </div>
 
                         <div class="md:col-span-2">
-                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                                <label class="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm text-slate-700">
-                                    <Checkbox v-model="form.medical_history.diabetes" binary />
-                                    <span>Diabetes</span>
-                                </label>
-                                <label class="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm text-slate-700">
-                                    <Checkbox v-model="form.medical_history.blood_pressure" binary />
-                                    <span>Blood Pressure</span>
-                                </label>
-                                <label class="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm text-slate-700">
-                                    <Checkbox v-model="form.medical_history.heart_disease" binary />
-                                    <span>Heart Disease</span>
-                                </label>
-                                <label class="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm text-slate-700">
-                                    <Checkbox v-model="form.medical_history.allergy" binary />
-                                    <span>Allergy</span>
-                                </label>
-                                <label class="flex items-center gap-2 rounded-lg border border-slate-200 p-3 text-sm text-slate-700">
-                                    <Checkbox v-model="form.medical_history.pregnancy_status" binary />
-                                    <span>Pregnancy Status</span>
-                                </label>
-                            </div>
+                            <label class="mb-2 block text-sm font-medium text-slate-700">Medical Details</label>
+                            <MedicalDetails v-model:medicals="form.medical_history.medical_id" />
                         </div>
 
                         <div class="md:col-span-2">
@@ -293,7 +264,6 @@ const submit = () => emit('submit');
                             <Textarea
                                 v-model="form.medical_history.allergy_details"
                                 rows="3"
-                                :disabled="!form.medical_history.allergy"
                                 :class="inputClass('medical_history.allergy_details').value"
                             />
                         </div>

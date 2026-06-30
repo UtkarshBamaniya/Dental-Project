@@ -19,17 +19,22 @@ const model = ref([
         ],
     },
     {
+        label: 'General Details',
+        items: [
+            {
+                label: 'Medical Details',
+                icon: 'pi pi-fw pi-info-circle',
+                href: '/medical-details',
+            },
+        ],
+    },
+    {
         label: 'Appointment',
         items: [
             {
                 label: 'Patient Appointment Master',
                 icon: 'pi pi-fw pi-book',
                 href: '/dental-patient-appointments',
-            },
-            {
-                label: 'Clinic Appointment',
-                icon: 'pi pi-fw pi-book',
-                href: '/appointment/clinic',
             },
         ],
     },

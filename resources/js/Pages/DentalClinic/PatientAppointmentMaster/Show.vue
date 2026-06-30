@@ -78,8 +78,6 @@ const formatCurrency = (value) => new Intl.NumberFormat('en-IN', {
     minimumFractionDigits: 2,
 }).format(Number(value ?? 0));
 
-const yesNo = (value) => value ? 'Yes' : 'No';
-
 const openMedicalHistory = () => {
     medicalHistoryForm.defaults({
         medical_history: createMedicalHistoryForm(props.medicalHistory),
@@ -268,25 +266,9 @@ const handlePrint = (appointment) => {
                                     <p class="text-xs uppercase tracking-wide text-slate-400">Blood Group</p>
                                     <p class="mt-1 text-sm text-slate-700">{{ medicalHistory.blood_group || '-' }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-xs uppercase tracking-wide text-slate-400">Diabetes</p>
-                                    <p class="mt-1 text-sm text-slate-700">{{ yesNo(medicalHistory.diabetes) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs uppercase tracking-wide text-slate-400">Blood Pressure</p>
-                                    <p class="mt-1 text-sm text-slate-700">{{ yesNo(medicalHistory.blood_pressure) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs uppercase tracking-wide text-slate-400">Heart Disease</p>
-                                    <p class="mt-1 text-sm text-slate-700">{{ yesNo(medicalHistory.heart_disease) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs uppercase tracking-wide text-slate-400">Allergy</p>
-                                    <p class="mt-1 text-sm text-slate-700">{{ yesNo(medicalHistory.allergy) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs uppercase tracking-wide text-slate-400">Pregnancy Status</p>
-                                    <p class="mt-1 text-sm text-slate-700">{{ yesNo(medicalHistory.pregnancy_status) }}</p>
+                                <div class="sm:col-span-2">
+                                    <p class="text-xs uppercase tracking-wide text-slate-400">Medical Details</p>
+                                    <p class="mt-1 text-sm text-slate-700">{{ medicalHistory.medical_names?.length ? medicalHistory.medical_names.join(', ') : '-' }}</p>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <p class="text-xs uppercase tracking-wide text-slate-400">Allergy Details</p>
