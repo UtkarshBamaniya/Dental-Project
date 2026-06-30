@@ -18,14 +18,10 @@ class DentalPatientMedicalHistory extends Model
     protected $fillable = [
         'patient_id',
         'blood_group',
-        'diabetes',
-        'blood_pressure',
-        'heart_disease',
-        'allergy',
+        'medical_id',
         'allergy_details',
         'current_medicine',
         'previous_dental_treatment',
-        'pregnancy_status',
         'other_medical_notes',
     ];
 
@@ -37,11 +33,7 @@ class DentalPatientMedicalHistory extends Model
     protected function casts(): array
     {
         return [
-            'diabetes' => 'boolean',
-            'blood_pressure' => 'boolean',
-            'heart_disease' => 'boolean',
-            'allergy' => 'boolean',
-            'pregnancy_status' => 'boolean',
+            'medical_id' => 'array',
         ];
     }
 

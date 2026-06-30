@@ -70,14 +70,11 @@ class DentalPatientAppointmentRequest extends FormRequest
         return [
             'medical_history' => ['sometimes', 'array'],
             'medical_history.blood_group' => ['nullable', 'string', 'max:20'],
-            'medical_history.diabetes' => ['nullable', 'boolean'],
-            'medical_history.blood_pressure' => ['nullable', 'boolean'],
-            'medical_history.heart_disease' => ['nullable', 'boolean'],
-            'medical_history.allergy' => ['nullable', 'boolean'],
+            'medical_history.medical_id' => ['nullable', 'array'],
+            'medical_history.medical_id.*' => ['integer', 'exists:medical_details,id'],
             'medical_history.allergy_details' => ['nullable', 'string'],
             'medical_history.current_medicine' => ['nullable', 'string'],
             'medical_history.previous_dental_treatment' => ['nullable', 'string'],
-            'medical_history.pregnancy_status' => ['nullable', 'boolean'],
             'medical_history.other_medical_notes' => ['nullable', 'string'],
         ];
     }

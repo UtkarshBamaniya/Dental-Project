@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\DentalPatientAppointmentController;
+use App\Http\Controllers\CommonController;
+use App\Http\Controllers\MedicalDetailController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -24,9 +26,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::post('common/get-medical-details', [CommonController::class, 'getMedicalDetails'])
+        ->name('common.medical-details');
     Route::post('dental-patient-appointments/{patient}/follow-up', [DentalPatientAppointmentController::class, 'storeFollowUp'])
         ->name('dental-patient-appointments.follow-up');
     Route::resource('dental-patient-appointments', DentalPatientAppointmentController::class);
+    Route::resource('medical-details', MedicalDetailController::class);
 });
 
 require __DIR__.'/auth.php';

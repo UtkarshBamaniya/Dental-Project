@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\DentalAppointment;
 use App\Models\DentalAppointmentBilling;
+use App\Models\MedicalDetail;
 use App\Models\DentalPatient;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -299,14 +300,14 @@ class DentalPatientAppointmentRepository
     {
         return [
             'blood_group' => Arr::get($medicalHistory, 'blood_group'),
-            'diabetes' => (bool) Arr::get($medicalHistory, 'diabetes', false),
-            'blood_pressure' => (bool) Arr::get($medicalHistory, 'blood_pressure', false),
-            'heart_disease' => (bool) Arr::get($medicalHistory, 'heart_disease', false),
-            'allergy' => (bool) Arr::get($medicalHistory, 'allergy', false),
+            'medical_id' => collect(Arr::get($medicalHistory, 'medical_id', []))
+                ->filter(fn ($value) => filled($value))
+                ->map(fn ($value) => (int) $value)
+                ->values()
+                ->all(),
             'allergy_details' => Arr::get($medicalHistory, 'allergy_details'),
             'current_medicine' => Arr::get($medicalHistory, 'current_medicine'),
             'previous_dental_treatment' => Arr::get($medicalHistory, 'previous_dental_treatment'),
-            'pregnancy_status' => (bool) Arr::get($medicalHistory, 'pregnancy_status', false),
             'other_medical_notes' => Arr::get($medicalHistory, 'other_medical_notes'),
         ];
     }
@@ -401,16 +402,28 @@ class DentalPatientAppointmentRepository
 
     private function medicalHistoryPayloadForView(mixed $medicalHistory): array
     {
+        $medicalIds = collect($medicalHistory?->medical_id ?? [])
+            ->filter(fn ($value) => filled($value))
+            ->map(fn ($value) => (int) $value)
+            ->values()
+            ->all();
+
+        $medicalNames = empty($medicalIds)
+            ? []
+            : MedicalDetail::query()
+                ->whereIn('id', $medicalIds)
+                ->orderBy('name')
+                ->pluck('name')
+                ->values()
+                ->all();
+
         return [
             'blood_group' => $medicalHistory?->blood_group,
-            'diabetes' => (bool) ($medicalHistory?->diabetes ?? false),
-            'blood_pressure' => (bool) ($medicalHistory?->blood_pressure ?? false),
-            'heart_disease' => (bool) ($medicalHistory?->heart_disease ?? false),
-            'allergy' => (bool) ($medicalHistory?->allergy ?? false),
+            'medical_id' => $medicalIds,
+            'medical_names' => $medicalNames,
             'allergy_details' => $medicalHistory?->allergy_details,
             'current_medicine' => $medicalHistory?->current_medicine,
             'previous_dental_treatment' => $medicalHistory?->previous_dental_treatment,
-            'pregnancy_status' => (bool) ($medicalHistory?->pregnancy_status ?? false),
             'other_medical_notes' => $medicalHistory?->other_medical_notes,
         ];
     }

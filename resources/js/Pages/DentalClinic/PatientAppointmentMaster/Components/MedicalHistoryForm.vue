@@ -1,9 +1,9 @@
 <script setup>
-import { computed, watch } from 'vue';
-import Checkbox from 'primevue/checkbox';
+import { computed } from 'vue';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
 import { bloodGroupOptions } from '../formOptions';
+import MedicalDetails from '@/Pages/Common/DropDown/Medical.vue';
 
 const props = defineProps({
     form: {
@@ -23,15 +23,6 @@ const props = defineProps({
 const optionify = (values) => values.map((value) => ({ label: value, value }));
 const errorKey = (field) => `${props.prefix}.${field}`;
 const inputClass = (field) => computed(() => ['w-full', props.errors[errorKey(field)] ? 'p-invalid' : '']);
-
-watch(
-    () => props.form.allergy,
-    (value) => {
-        if (!value) {
-            props.form.allergy_details = '';
-        }
-    },
-);
 </script>
 
 <template>
@@ -49,38 +40,13 @@ watch(
         </div>
 
         <div class="md:col-span-2">
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700">
-                    <Checkbox v-model="form.diabetes" binary />
-                    <span>Diabetes</span>
-                </label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700">
-                    <Checkbox v-model="form.blood_pressure" binary />
-                    <span>Blood Pressure</span>
-                </label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700">
-                    <Checkbox v-model="form.heart_disease" binary />
-                    <span>Heart Disease</span>
-                </label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700">
-                    <Checkbox v-model="form.allergy" binary />
-                    <span>Allergy</span>
-                </label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm text-slate-700">
-                    <Checkbox v-model="form.pregnancy_status" binary />
-                    <span>Pregnancy Status</span>
-                </label>
-            </div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Medical Details</label>
+            <MedicalDetails v-model:medicals="form.medical_id" />
         </div>
 
         <div class="md:col-span-2">
             <label class="mb-2 block text-sm font-medium text-slate-700">Allergy Details</label>
-            <Textarea
-                v-model="form.allergy_details"
-                rows="3"
-                :disabled="!form.allergy"
-                :class="inputClass('allergy_details').value"
-            />
+            <Textarea v-model="form.allergy_details" rows="3" :class="inputClass('allergy_details').value" />
         </div>
 
         <div class="md:col-span-2">
