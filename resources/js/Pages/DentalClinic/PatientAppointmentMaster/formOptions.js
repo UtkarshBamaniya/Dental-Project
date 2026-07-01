@@ -25,17 +25,6 @@ const toTimeObject = (value) => {
 export const genderOptions = ['Male', 'Female', 'Other'];
 export const statusOptions = ['Active', 'Inactive'];
 export const bloodGroupOptions = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
-export const appointmentTypeOptions = [
-    'Consultation',
-    'Cleaning',
-    'Root Canal',
-    'Extraction',
-    'Filling',
-    'Braces Consultation',
-    'Crown / Bridge',
-    'Implant Consultation',
-    'Follow-up',
-];
 export const problemAreaOptions = ['Upper Left', 'Upper Right', 'Lower Left', 'Lower Right', 'Full Mouth'];
 export const priorityOptions = ['Normal', 'Urgent', 'Emergency'];
 export const appointmentStatusOptions = ['Scheduled', 'Completed', 'Cancelled', 'Rescheduled', 'No Show'];
@@ -80,7 +69,7 @@ export const createAppointmentForm = (appointment = null, defaults = {}) => ({
     appointment_time: toTimeObject(appointment?.appointment_time ?? defaults.appointment_time ?? null),
     doctor_id: appointment?.doctor_id ?? defaults.doctor_id ?? null,
     visit_type: appointment?.visit_type ?? defaults.visit_type ?? 'First Visit',
-    appointment_type: appointment?.appointment_type ?? defaults.appointment_type ?? null,
+    appointment_type_id: appointment?.appointment_type_id ?? defaults.appointment_type_id ?? null,
     chief_complaint: appointment?.chief_complaint ?? '',
     problem_area: appointment?.problem_area ?? defaults.problem_area ?? null,
     tooth_no: appointment?.tooth_no ?? '',
@@ -109,7 +98,6 @@ export const createPatientAppointmentForm = (payload = null) => ({
 export const createFollowUpForm = (appointment = null) => ({
     appointment: createAppointmentForm(appointment, {
         visit_type: 'Follow-up',
-        appointment_type: 'Follow-up',
         priority: 'Normal',
         status: 'Scheduled',
     }),

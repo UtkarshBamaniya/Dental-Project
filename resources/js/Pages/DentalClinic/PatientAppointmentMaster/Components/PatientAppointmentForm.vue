@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import AppointmentType from '@/Pages/Common/DropDown/AppointmentType.vue';
 import DatePicker from 'primevue/datepicker';
 import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
@@ -7,7 +8,6 @@ import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
 import {
     appointmentStatusOptions,
-    appointmentTypeOptions,
     priorityOptions,
     problemAreaOptions,
     visitTypeOptions,
@@ -71,14 +71,13 @@ const inputClass = (field) => computed(() => ['w-full', props.errors[errorKey(fi
 
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700">Appointment Type</label>
-            <Select
-                v-model="form.appointment_type"
-                :options="optionify(appointmentTypeOptions)"
-                option-label="label"
-                option-value="value"
+            <AppointmentType
+                v-model="form.appointment_type_id"
                 placeholder="Select appointment type"
-                :class="inputClass('appointment_type').value"
+                :input-class="inputClass('appointment_type_id').value"
+                :invalid="!!errors[errorKey('appointment_type_id')]"
             />
+            <small v-if="errors[errorKey('appointment_type_id')]" class="mt-1 block text-rose-500">{{ errors[errorKey('appointment_type_id')] }}</small>
         </div>
 
         <div class="md:col-span-2 xl:col-span-3">

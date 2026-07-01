@@ -9,7 +9,6 @@ import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
 import {
     appointmentStatusOptions,
-    appointmentTypeOptions,
     bloodGroupOptions,
     genderOptions,
     paymentModeOptions,
@@ -20,6 +19,7 @@ import {
     visitTypeOptions,
 } from '../formOptions';
 import { Link } from '@inertiajs/vue3';
+import AppointmentType from '@/Pages/Common/DropDown/AppointmentType.vue';
 import MedicalDetails from '@/Pages/Common/DropDown/Medical.vue';
 
 const props = defineProps({
@@ -337,14 +337,15 @@ const submit = () => emit('submit');
 
                         <div>
                             <label class="mb-2 block text-sm font-medium text-slate-700">Appointment Type</label>
-                            <Select
-                                v-model="form.appointment.appointment_type"
-                                :options="optionify(appointmentTypeOptions)"
-                                option-label="label"
-                                option-value="value"
+                            <AppointmentType
+                                v-model="form.appointment.appointment_type_id"
                                 placeholder="Select appointment type"
-                                :class="inputClass('appointment.appointment_type').value"
+                                :input-class="inputClass('appointment.appointment_type_id').value"
+                                :invalid="!!form.errors['appointment.appointment_type_id']"
                             />
+                            <small v-if="form.errors['appointment.appointment_type_id']" class="mt-1 block text-rose-500">
+                                {{ form.errors['appointment.appointment_type_id'] }}
+                            </small>
                         </div>
 
                         <div class="md:col-span-2 xl:col-span-3">
