@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppointmentType;
 use App\Models\MedicalDetail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,5 +28,23 @@ class CommonController extends Controller
             ->get(['id', 'name']);
 
         return response()->json($medicalDetails);
+    }
+
+    public function getAppointmentTypes(Request $request): JsonResponse
+    {
+        $selectedId = $request->input('id');
+
+        $appointmentTypes = AppointmentType::query()
+            ->where(function ($builder) use ($selectedId) {
+                $builder->where('status', 1);
+
+                if (filled($selectedId)) {
+                    $builder->orWhere('id', (int) $selectedId);
+                }
+            })
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json($appointmentTypes);
     }
 }

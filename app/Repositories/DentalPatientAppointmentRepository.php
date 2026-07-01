@@ -42,7 +42,7 @@ class DentalPatientAppointmentRepository
         $page = max(1, (int) Arr::get($request, 'page', 1));
 
         return DentalPatient::query()
-            ->with(['medicalHistory', 'latestAppointment.billing'])
+            ->with(['medicalHistory', 'latestAppointment.billing', 'latestAppointment.appointmentType'])
             ->withMax('appointments', 'appointment_date')
             ->when($filters['search'], function ($query, $search) {
                 $query->where(function ($subQuery) use ($search) {
@@ -193,7 +193,7 @@ class DentalPatientAppointmentRepository
         $patient->load([
             'medicalHistory',
             'appointments' => fn ($query) => $query
-                ->with('billing')
+                ->with(['billing', 'appointmentType'])
                 ->orderByDesc('appointment_date')
                 ->orderByDesc('appointment_time')
                 ->orderByDesc('id'),
@@ -319,7 +319,7 @@ class DentalPatientAppointmentRepository
             'appointment_time' => $this->normalizeTime(Arr::get($appointment, 'appointment_time')),
             'doctor_id' => Arr::get($appointment, 'doctor_id'),
             'visit_type' => Arr::get($appointment, 'visit_type', 'First Visit'),
-            'appointment_type' => Arr::get($appointment, 'appointment_type'),
+            'appointment_type_id' => Arr::get($appointment, 'appointment_type_id'),
             'chief_complaint' => Arr::get($appointment, 'chief_complaint'),
             'problem_area' => Arr::get($appointment, 'problem_area'),
             'tooth_no' => Arr::get($appointment, 'tooth_no'),
@@ -471,7 +471,8 @@ class DentalPatientAppointmentRepository
             'doctor_id' => $appointment->doctor_id,
             'doctor_name' => $appointment->doctor_id ? 'Doctor #'.$appointment->doctor_id : null,
             'visit_type' => $appointment->visit_type,
-            'appointment_type' => $appointment->appointment_type,
+            'appointment_type_id' => $appointment->appointment_type_id,
+            'appointment_type' => $appointment->appointmentType?->name,
             'chief_complaint' => $appointment->chief_complaint,
             'problem_area' => $appointment->problem_area,
             'tooth_no' => $appointment->tooth_no,
@@ -495,14 +496,14 @@ class DentalPatientAppointmentRepository
         $today = Carbon::today();
 
         $todayAppointments = DentalAppointment::query()
-            ->with('patient')
+            ->with(['patient', 'appointmentType'])
             ->whereDate('appointment_date', $today->toDateString())
             ->orderBy('appointment_time')
             ->limit(6)
             ->get();
 
         $upcomingAppointments = DentalAppointment::query()
-            ->with('patient')
+            ->with(['patient', 'appointmentType'])
             ->whereDate('appointment_date', '>', $today->toDateString())
             ->orderBy('appointment_date')
             ->orderBy('appointment_time')

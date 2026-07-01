@@ -26,6 +26,11 @@ const model = ref([
                 icon: 'pi pi-fw pi-info-circle',
                 href: '/medical-details',
             },
+            {
+                label: 'Appointment Type',
+                icon: 'pi pi-fw pi-calendar',
+                href: '/appointment-type',
+            },
         ],
     },
     {

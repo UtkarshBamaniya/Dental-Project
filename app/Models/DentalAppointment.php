@@ -25,7 +25,7 @@ class DentalAppointment extends Model
         'appointment_time',
         'doctor_id',
         'visit_type',
-        'appointment_type',
+        'appointment_type_id',
         'chief_complaint',
         'problem_area',
         'tooth_no',
@@ -56,5 +56,10 @@ class DentalAppointment extends Model
     public function billing(): HasOne
     {
         return $this->hasOne(DentalAppointmentBilling::class, 'appointment_id');
+    }
+
+    public function appointmentType(): BelongsTo
+    {
+        return $this->belongsTo(AppointmentType::class, 'appointment_type_id');
     }
 }

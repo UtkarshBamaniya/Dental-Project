@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('dental_appointments', function (Blueprint $table) {
             $table->id();
-            $table->integer('patient_id');
+            $table->foreignId('patient_id');
             $table->string('appointment_no')->nullable()->unique();
             $table->date('appointment_date');
             $table->time('appointment_time');
             $table->integer('doctor_id')->nullable();
             $table->enum('visit_type', ['First Visit', 'Follow-up'])->default('First Visit');
-            $table->string('appointment_type')->nullable();
+            $table->foreignId('appointment_type_id')->nullable()->constrained('appointment_types')->nullOnDelete();
             $table->text('chief_complaint')->nullable();
             $table->string('problem_area')->nullable();
             $table->string('tooth_no')->nullable();

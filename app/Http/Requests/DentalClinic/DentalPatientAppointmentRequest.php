@@ -87,7 +87,7 @@ class DentalPatientAppointmentRequest extends FormRequest
             'appointment.appointment_time' => ['required'],
             'appointment.doctor_id' => ['nullable', 'numeric'],
             'appointment.visit_type' => ['required', Rule::in(['First Visit', 'Follow-up'])],
-            'appointment.appointment_type' => ['nullable', 'string', 'max:255'],
+            'appointment.appointment_type_id' => ['nullable', 'integer', 'exists:appointment_types,id'],
             'appointment.priority' => ['required', Rule::in(['Normal', 'Urgent', 'Emergency'])],
             'appointment.status' => ['required', Rule::in(['Scheduled', 'Completed', 'Cancelled', 'Rescheduled', 'No Show'])],
             'appointment.chief_complaint' => ['nullable', 'string'],
